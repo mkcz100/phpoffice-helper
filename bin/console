@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__.'/../vendor/autoload.php';
+
+use MK\PhpofficeHelper\Command\TitleCellCommand;
+use MK\PhpofficeHelper\Command\XlsToPdfCommand;
+use Symfony\Component\Console\Application;
+
+const APP_VERSION = '1.0.0';
+
+$application = new Application('phpoffice helper', APP_VERSION);
+$application->add(new XlsToPdfCommand());
+$application->add(new TitleCellCommand());
+
+// ... register commands
+
+$application->run();

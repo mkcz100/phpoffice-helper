@@ -1,0 +1,12 @@
+{
+    "name": "mk/phpoffice-helper",
+    "autoload": {
+        "psr-4": {
+            "MK\\PhpofficeHelper\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.4|^8.1",
+        "symfony/console": "^5.4"
+    }
+}
