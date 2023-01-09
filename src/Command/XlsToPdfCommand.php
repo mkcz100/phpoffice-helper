@@ -4,9 +4,7 @@ namespace MK\PhpofficeHelper\Command;
 
 use MK\PhpofficeHelper\Util;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Exception;
+use SplFileInfo;
 
 class XlsToPdfCommand extends BaseCommand
 {
@@ -19,46 +17,16 @@ class XlsToPdfCommand extends BaseCommand
         $this->setDescription('Converts XLS files from input folder to PDF in output.');
     }
 
-    protected function execute(
-        InputInterface $input,
-        OutputInterface $output
-    ): int
+    protected function processFile(
+        SplFileInfo $file
+    ): void
     {
-        $inputDir = Util::buildDir('/input');
-        $outputDir = Util::buildDir('/output');
+        $xlsRelativePath = Util::getFileLocalPath($file);
+        $pdfRelativePath = str_replace('.' . $file->getExtension(), '.pdf', $xlsRelativePath);
 
-        $files = Util::loadDirectory($inputDir);
+        $spreadsheet = IOFactory::load($file->getPathname());
 
-        $validFiles = [];
-        $invalidFiles = [];
-
-        foreach ($files as $file) {
-            $xlsRelativePath = str_replace($file->getPath(), '', $file->getPathname());
-            $pdfRelativePath = str_replace($file->getExtension(), 'pdf', $xlsRelativePath);
-
-            try {
-                $spreadsheet = IOFactory::load($file->getPathname());
-
-                $writer = IOFactory::createWriter($spreadsheet, self::PDF_WRITER_TYPE);
-                $writer->save($outputDir . $pdfRelativePath);
-
-                $validFiles[] = $xlsRelativePath;
-            } catch (Exception $e) {
-                $output->writeln($e->getMessage(), OutputInterface::VERBOSITY_DEBUG);
-                $invalidFiles[] = $xlsRelativePath;
-            }
-        }
-
-        if(!empty($validFiles)) {
-            $output->writeln('Successfully converted files:');
-            array_walk($validFiles, fn($file) => $output->writeln($file));
-        }
-
-        if(!empty($invalidFiles)) {
-            $output->writeln('Conversion failed for files:');
-            array_walk($invalidFiles, fn($file) => $output->writeln($file));
-        }
-
-        return self::SUCCESS;
+        $writer = IOFactory::createWriter($spreadsheet, self::PDF_WRITER_TYPE);
+        $writer->save($this->outputDir . $pdfRelativePath);
     }
 }

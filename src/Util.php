@@ -39,4 +39,11 @@ class Util
 
         return $resultFiles;
     }
+
+    public static function getFileLocalPath(
+        SplFileInfo $file
+    ): string
+    {
+        return str_replace($file->getPath(), '', $file->getPathname());
+    }
 }
