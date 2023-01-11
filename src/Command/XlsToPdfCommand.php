@@ -2,14 +2,13 @@
 
 namespace MK\PhpofficeHelper\Command;
 
-use MK\PhpofficeHelper\Util;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use SplFileInfo;
+use MK\PhpofficeHelper\Enum\WriterType;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class XlsToPdfCommand extends BaseCommand
 {
-    protected const PDF_WRITER_TYPE = 'Mpdf';
-
     protected function configure()
     {
         parent::configure();
@@ -17,16 +16,15 @@ class XlsToPdfCommand extends BaseCommand
         $this->setDescription('Converts XLS files from input folder to PDF in output.');
     }
 
+    protected function getWriterType(): WriterType
+    {
+        return WriterType::PDF;
+    }
+
     protected function processFile(
         SplFileInfo $file
-    ): void
+    ): Spreadsheet
     {
-        $xlsRelativePath = Util::getFileLocalPath($file);
-        $pdfRelativePath = str_replace('.' . $file->getExtension(), '.pdf', $xlsRelativePath);
-
-        $spreadsheet = IOFactory::load($file->getPathname());
-
-        $writer = IOFactory::createWriter($spreadsheet, self::PDF_WRITER_TYPE);
-        $writer->save($this->outputDir . $pdfRelativePath);
+        return IOFactory::load($file->getPathname());
     }
 }

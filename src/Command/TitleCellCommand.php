@@ -2,10 +2,10 @@
 
 namespace MK\PhpofficeHelper\Command;
 
-use MK\PhpofficeHelper\Util;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use SplFileInfo;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class TitleCellCommand extends BaseCommand
 {
@@ -17,7 +17,7 @@ class TitleCellCommand extends BaseCommand
     }
     protected function processFile(
         SplFileInfo $file
-    ): void
+    ): Spreadsheet
     {
         $spreadsheet = IOFactory::load($file->getPathname());
 
@@ -39,7 +39,6 @@ class TitleCellCommand extends BaseCommand
                 ->setBold(true);
         }
 
-        $writer = IOFactory::createWriter($spreadsheet, IOFactory::WRITER_XLSX);
-        $writer->save($this->outputDir . Util::getFileLocalPath($file));
+        return $spreadsheet;
     }
 }
