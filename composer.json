@@ -10,5 +10,8 @@
         "symfony/console": "^5.4",
         "phpoffice/phpspreadsheet": "^1.25",
         "mpdf/mpdf": "^8.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
     }
 }
