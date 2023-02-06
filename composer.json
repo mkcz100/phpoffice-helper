@@ -2,7 +2,8 @@
     "name": "mk/phpoffice-helper",
     "autoload": {
         "psr-4": {
-            "MK\\PhpofficeHelper\\": "src/"
+            "MK\\PhpofficeHelper\\": "src/",
+            "Tests\\": "tests/"
         }
     },
     "require": {

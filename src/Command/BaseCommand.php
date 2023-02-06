@@ -19,6 +19,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class BaseCommand extends Command
 {
+
+    protected string $inputDir = '/input';
+    protected string $outputDir = '/output';
+
+    public function setInputDir(
+        string $inputDir
+    ): void
+    {
+        $this->inputDir = rtrim($inputDir, '/');
+    }
+
+    public function setOutputDir(
+        string $outputDir
+    ): void
+    {
+        $this->outputDir = rtrim($outputDir, '/');
+    }
+
     abstract protected function processFile(SplFileInfo $file): Spreadsheet;
 
     protected function configure()
@@ -73,7 +91,7 @@ abstract class BaseCommand extends Command
          * @var SplFileInfo[] $invalidFiles
          * @var SpreadsheetFileModel[] $spreadsheetFiles
          */
-        $files = Util::loadDirectory(Util::buildDir('/input'));
+        $files = Util::loadDirectory(Util::buildDir($this->inputDir));
         $invalidFiles = [];
         $spreadsheetFiles = [];
         // 2. Files processing implemented in inheriting class
@@ -129,7 +147,7 @@ abstract class BaseCommand extends Command
     ): void
     {
         $folder = sprintf('/%s-%s-%s', (string) time(), $this->getName(), Util::randomString(8));
-        $outputDir = Util::buildDir('/output' . $folder);
+        $outputDir = Util::buildDir($this->outputDir . $folder);
 
         try {
             if (!mkdir($outputDir, 0755, true)) {
@@ -139,7 +157,7 @@ abstract class BaseCommand extends Command
             if (OutputType::ZIP === $outputType) {
                 $zip = new ZipArchive();
 
-                $zipPath = Util::buildDir('/output' . $folder . '.zip');
+                $zipPath = Util::buildDir($this->outputDir . $folder . '.zip');
                 if (true !== $zip->open($zipPath, ZipArchive::CREATE)) {
                     throw new ErrorException('Unable to create zip archive');
                 }

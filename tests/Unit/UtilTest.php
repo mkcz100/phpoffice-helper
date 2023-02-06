@@ -3,12 +3,10 @@
 namespace Tests\Unit;
 
 use MK\PhpofficeHelper\Util;
-use PHPUnit\Framework\TestCase;
+use Tests\PHPUnit\BaseTestCase;
 
-final class UtilTest extends TestCase
+final class UtilTest extends BaseTestCase
 {
-    private ?string $tmpDir = null;
-
     public function testBuildDir(): void
     {
         $dir = Util::buildDir('/output');
@@ -19,18 +17,18 @@ final class UtilTest extends TestCase
     public function testLoadDirectory(): void
     {
         $testFiles = ['test1.xml', 'test2.json', 'test3.php'];
-        $this->tmpDir = sys_get_temp_dir() . '/' . 'dir_' . uniqid();
+        $tmpDir = Util::buildDir('/tests/tmp/dir_' . uniqid());
 
-        if (!mkdir($this->tmpDir)) {
-            $this->fail(sprintf('Unable to create %s directory', $this->tmpDir));
+        if (!mkdir($tmpDir)) {
+            $this->fail(sprintf('Unable to create %s directory', $tmpDir));
         }
 
         array_walk(
             $testFiles,
-            fn($name) => file_put_contents($this->tmpDir . '/' . $name, '')
+            fn($name) => file_put_contents($tmpDir . '/' . $name, '')
         );
 
-        $splFiles = Util::loadDirectory($this->tmpDir);
+        $splFiles = Util::loadDirectory($tmpDir);
 
         $this->assertSame(count($testFiles), count($splFiles));
 
@@ -55,7 +53,7 @@ final class UtilTest extends TestCase
 
     public function testDeleteDir(): void
     {
-        $dir = sys_get_temp_dir() . '/' . 'test-remove-' . uniqid();
+        $dir = Util::buildDir('/tests/tmp/test-remove-' . uniqid());
 
         if (!mkdir($dir)) {
             $this->fail(sprintf('Unable to create %s directory', $dir));
@@ -63,17 +61,5 @@ final class UtilTest extends TestCase
 
         $this->assertTrue(Util::deleteDir($dir));
         $this->assertFalse(file_exists($dir));
-    }
-
-    /**
-     * Run after each test
-     * @return void
-     */
-    protected function tearDown(): void
-    {
-        if (null !== $this->tmpDir && file_exists($this->tmpDir)) {
-            shell_exec("rm -rf " . $this->tmpDir);
-            $this->tmpDir = null;
-        }
     }
 }
